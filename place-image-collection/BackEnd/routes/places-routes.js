@@ -3,6 +3,8 @@ const bodyParser = require('body-parser');
 
 const router = express.Router();
 
+const HttpError = require('../models/http-error');
+
 const DUMMY_PLACES =[
     {
         id: 'p1',
@@ -35,14 +37,14 @@ const DUMMY_PLACES =[
 router.get('/user/:userId',(req,res,next)=>{
     
     const userId = req.params.userId;//{pid  : 'p1'}
-    console.log(userId);
     const user = DUMMY_PLACES.find(p=> {
         return p.creator === userId
     })
     if(!user){
-        const error = new Error('Could not find a place for the provided user id ')
-        error.code = 404;
-        return next(error);
+        const n =new HttpError('Could not find a place for the provided user id ', 404)
+        console.log(n)
+        return next(new HttpError('Could not find a place for the provided user id ', 404));
+        
       }
     res.json({user});
 })
@@ -59,9 +61,8 @@ router.get('/:placeId',(req,res,next)=>{
       //calling the error handler next(error) or throw(err)
       //for asynchrounous code use return next(err)
       //for synchrounous code use throw(err)
-      const error = new Error('Could not find a place for the provided id ')
-      error.code = 404;
-      throw error;
+      throw new HttpError('Could not find a place for the provided id ',404)
+       
     }
         res.json({place});
     
