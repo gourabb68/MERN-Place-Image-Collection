@@ -31,17 +31,44 @@ const DUMMY_PLACES =[
         
     }
 ]
-router.route.
-get('/:placeId',(req,res,next)=>{
+
+router.get('/user/:userId',(req,res,next)=>{
+    
+    const userId = req.params.userId;//{pid  : 'p1'}
+    console.log(userId);
+    const user = DUMMY_PLACES.find(p=> {
+        return p.creator === userId
+    })
+    if(!user){
+        const error = new Error('Could not find a place for the provided user id ')
+        error.code = 404;
+        return next(error);
+      }
+    res.json({user});
+})
+
+
+router.get('/:placeId',(req,res,next)=>{
     console.log('GEt Request in Places');
-    const placeId = req.params;//{pid  : 'p1'}
+    const placeId = req.params.placeId;//{pid  : 'p1'}
     console.log(placeId);
     const place = DUMMY_PLACES.find(p=> {
-        return p.id === placeId.placeId
+        return p.id === placeId
     })
-    console.log(place);
-    res.json({place});
+    if(!place){
+      //calling the error handler next(error) or throw(err)
+      //for asynchrounous code use return next(err)
+      //for synchrounous code use throw(err)
+      const error = new Error('Could not find a place for the provided id ')
+      error.code = 404;
+      throw error;
+    }
+        res.json({place});
+    
+   
 })
+
+
 
 
 
