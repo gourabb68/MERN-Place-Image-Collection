@@ -69,3 +69,5 @@ const NewPlace = () => {
 };
 
 export default NewPlace;
+
+
