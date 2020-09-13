@@ -61,11 +61,41 @@ const Auth = () => {
     event.preventDefault();
     console.log(formState.inputs);
 let response;
+setIsLoading(true); 
     if (isLoginMode) {
+      try {
+              
+        //sending http request to express server
+         response = await fetch("http://localhost:5000/api/users/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({           
+            email: formState.inputs.email.value,
+            password: formState.inputs.password.value,
+          }),
+        });
+        const responseData = await response.json();
+        //checking response error code cause for fetch 404 500 are not error technically
+        if(!response.ok)//means not 200 like 400 500 etc
+        {
+          throw new Error(responseData.message)
+        }
+        console.log(responseData);  
+        setIsLoading(false);
+        auth.login();
+      } catch (err) {
+        console.log(err);
+        setIsLoading(false);
+        setError(err.message || 'Something went wrong please try again')
+      }
+
+
     } else {
       
       try {
-        setIsLoading(true);       
+              
         //sending http request to express server
          response = await fetch("http://localhost:5000/api/users/signup", {
           method: "POST",
