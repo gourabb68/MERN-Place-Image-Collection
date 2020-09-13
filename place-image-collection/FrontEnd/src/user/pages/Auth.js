@@ -11,11 +11,14 @@ import {
 import { useForm } from "../../shared/hooks/form-hook";
 import { AuthContext } from "../../shared/components/context/auth-context";
 import "./Auth.css";
+import ErrorModal from '../../shared/components/UIElements/ErrorModal';
+import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 
 const Auth = () => {
   const auth = useContext(AuthContext);
   const [isLoginMode, setIsLoginMode] = useState(true);
-
+  const [isLoading, setIsLoading]= useState(false);
+  const [error,setError]=useState();
   const [formState, inputHandler, setFormData] = useForm(
     {
       email: {
@@ -62,6 +65,7 @@ let response;
     } else {
       
       try {
+        setIsLoading(true);       
         //sending http request to express server
          response = await fetch("http://localhost:5000/api/users/signup", {
           method: "POST",
@@ -74,18 +78,35 @@ let response;
             password: formState.inputs.email.value,
           }),
         });
+        const responseData = await response.json();
+        //checking response error code cause for fetch 404 500 are not error technically
+        if(!response.ok)//means not 200 like 400 500 etc
+        {
+          throw new Error(responseData.message)
+        }
+        console.log(responseData);  
+        setIsLoading(false);
+        auth.login();
       } catch (err) {
         console.log(err);
+        setIsLoading(false);
+        setError(err.message || 'Something went wrong please try again')
       }
     }
 
-    const responseData = await response.json();
-    console.log(responseData);
-    auth.login();
+   
+    
   };
 
+  const errorHandler =()=>{
+    setError(null)
+  }
+
   return (
+    <>
+    <ErrorModal error={error} onClear={errorHandler}/>
     <Card className="authentication">
+      {isLoading && <LoadingSpinner asOverlay={true} /> }
       <h2>Login Required</h2>
       <hr />
       <form onSubmit={authSubmitHandler}>
@@ -126,6 +147,7 @@ let response;
         SWITCH TO {isLoginMode ? "SIGNUP" : "LOGIN"}
       </Button>
     </Card>
+    </>
   );
 };
 
