@@ -8,7 +8,18 @@ const userRoutes = require('./routes/users-routes');
 
 const app = express();
 
-app.use(bodyParser.json())
+app.use(bodyParser.json());
+
+//CORS POLICY
+app.use((req,res,next)=>{
+    //allow any domain to send request
+    res.setHeader('Access-Control-Allow-Origin','*');
+
+    res.setHeader('Access-Control-Allow-Headers',
+    'Origin, X-Requested-With,Content-Type, Accept, Authorization');
+    res.setHeader('Access-Control-Allow-Method', 'GET, POST, PATCH, DELETE')
+    next();
+})
 
 app.use('/api/places',placesRoutes);
 app.use('/api/users',userRoutes);
@@ -39,7 +50,7 @@ app.use((error,req,res,next)=>{
 ///   })
 ///   .catch((err)=> console.log(err +' failed'))
 
-const url ='mongodb+srv://Gourab:Gourab@007@cluster0.dbqee.gcp.mongodb.net/plc?retryWrites=true&w=majority';
+const url ='mongodb+srv://Gourab:Gourab@007@cluster0.dbqee.gcp.mongodb.net/mern?retryWrites=true&w=majority';
 mongoose.connect(url, { useUnifiedTopology: true ,useNewUrlParser: true }).then(()=>{
     console.log('Connected  to DB');
     app.listen(5000);
