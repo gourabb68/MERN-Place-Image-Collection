@@ -114,7 +114,7 @@ catch(error) {
       title,
       description,
       address,
-      location,
+      location:DUMMY_PLACES[0].location,
       image: 'https://cdn.britannica.com/86/170586-050-AB7FEFAE/Taj-Mahal-Agra-India.jpg',
       creator
 

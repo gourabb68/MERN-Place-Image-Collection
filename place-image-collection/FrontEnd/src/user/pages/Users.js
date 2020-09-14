@@ -2,40 +2,30 @@ import React,{useEffect,useState} from 'react';
 import UsersList from '../components/UsersList'; 
 import ErrorModal from '../../shared/components/UIElements/ErrorModal';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
-
+import { useHttpClient } from "../../shared/hooks/http-hook";
  const Users =() =>{
-     const [isLoading,setIsLoading]= useState(false);
-     const [error,setError]= useState();
+    //  const [isLoading,setIsLoading]= useState(false);
+    //  const [error,setError]= useState();
+    const { isLoading, error, sendRequest, clearError } = useHttpClient();
      const [loadedUsers,setLoadedUsers]= useState()
 useEffect(()=>{
     //don't make useEffect callback function as async
     //useEffect never want to return promise so use IIFE
     //for fetch by default its a GET req so no need to declare
-     const sendRequest= async()=>{
-        setIsLoading(true);
+     const fetchUsers= async()=>{
         try{
-            const response = await fetch('http://localhost:5000/api/users');
-            const responseData = await response.json();
-            if(!response.ok){
-                console.log(responseData)
-              throw new Error(responseData.message)  
-            }
+            const responseData = await sendRequest('http://localhost:5000/api/users');
             setLoadedUsers(responseData.users);
-            setIsLoading(false);
+            
         }
         catch(err){
-            setIsLoading(false);
-            setError(err.message)
-            console.log(err)
-        }
+           }
 
      }
-     sendRequest();
-},[])
+     fetchUsers();
+},[sendRequest])
 
-const errorHandler = ()=>{
-    setError(null)
-}
+
 
     // const USER = [
     //     {
@@ -47,7 +37,7 @@ const errorHandler = ()=>{
     // ];
      return (
      <>
-     <ErrorModal error={error} onClear={errorHandler}/>
+     <ErrorModal error={error} onClear={clearError}/>
       {isLoading && <div className='center'>
           <LoadingSpinner/>
           </div> } 

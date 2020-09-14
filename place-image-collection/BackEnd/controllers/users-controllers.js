@@ -104,7 +104,7 @@ if(!existingUser || existingUser.password !== password) {
 }
 
 
-   res.json({message : 'Logged In'});
+   res.json({message : 'Logged In',user: existingUser.toObject({getters:true})});
 }
 
 exports.getUsers =getUsers;
